@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма регистрации</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        async function handleSubmit(event) {
+            event.preventDefault(); // Предотвращаем стандартное поведение формы
+
+            // Получаем значения полей формы
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const phone = document.getElementById('phone').value;
+
+            // Создаем объект с данными для отправки
+            const userData = {
+                email: email,
+                password: password,
+                name: username,
+                phone: phone
+            };
+
+            try {
+                const response = await fetch('http://localhost:8000/api/user/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json' // Указываем тип содержимого
+                    },
+                    body: JSON.stringify(userData), // Преобразуем объект в JSON
+                });
+
+                const messageDiv = document.getElementById('message');
+                messageDiv.style.display = 'block'; // Показываем сообщение
+
+                if (response.ok) {
+                    // Если ответ успешный, получаем данные пользователя
+                    const userData = await response.json();
+
+                    // Сохраняем данные пользователя в localStorage
+                    localStorage.setItem('userData', JSON.stringify(userData[0]));
+
+                    // Перенаправляем на страницу user_account.html
+                    window.location.href = 'user_account.html';
+                } else {
+                    // Обработка ошибок, если необходимо
+                    const errorData = await response.json();
+                    messageDiv.innerText = 'Ошибка: ' + errorData.detail.message;
+                    messageDiv.className = 'error'; // Ошибки красным цветом
+                }
+            } catch (error) {
+                console.error('Ошибка при отправке данных:', error);
+                const messageDiv = document.getElementById('message');
+                messageDiv.style.display = 'block'; // Показываем сообщение
+                messageDiv.innerText = 'Произошла ошибка при отправке данных. Пожалуйста, попробуйте позже.';
+                messageDiv.className = 'error'; // Ошибка красным цветом
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<div>
+    <form action="/register" method="post" onsubmit="handleSubmit(event)">
+        <div class="form-frame">
+            <div class="write_form">
+                <div>
+                    <label for="username">ФИО</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div>
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div>
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div>
+                    <label for="phone">Номер телефона</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div>
+                    <button type="submit">Зарегистрироваться</button>
+                </div>
+                <div>
+                    <p>Уже есть аккаунт? <a href="login.html">Войти</a></p>
+                </div>
+            </div>
+        </div>
+    </form>
+
+<!-- Элемент для отображения сообщения -->
+<div id="message"></div>
+
+</div>
+
+
+</body>
+</html>

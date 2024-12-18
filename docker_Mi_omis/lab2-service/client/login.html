@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма входа</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault(); // Предотвращаем стандартное поведение формы
+
+            // Получаем значения полей формы
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Кодируем параметры для URL
+            const params = new URLSearchParams({
+                email: email,
+                password: password
+            }).toString();
+
+            try {
+                const response = await fetch(`http://localhost:8000/api/user/login?${params}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json' // Указываем тип содержимого
+                    }
+                });
+
+                const messageDiv = document.getElementById('message');
+                messageDiv.style.display = 'block'; // Показываем сообщение
+
+                if (response.ok) {
+                    // Если ответ успешный, получаем данные пользователя
+                    const userData = await response.json();
+
+                    // Сохраняем данные пользователя в localStorage
+                    localStorage.setItem('userData', JSON.stringify(userData[0]));
+
+                    // Перенаправляем на страницу user_account.html
+                    window.location.href = 'user_account.html';
+                } else {
+                    // Обработка ошибок, если необходимо
+                    const errorData = await response.json();
+                    messageDiv.innerText = 'Ошибка: ' + errorData.detail.message;
+                    messageDiv.className = 'error'; // Ошибки красным цветом
+                }
+            } catch (error) {
+                console.error('Ошибка при отправке данных:', error);
+                const messageDiv = document.getElementById('message');
+                messageDiv.style.display = 'block'; // Показываем сообщение
+                messageDiv.innerText = 'Произошла ошибка при отправке данных. Пожалуйста, попробуйте позже.';
+                messageDiv.className = 'error'; // Ошибка красным цветом
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<div>
+    <form action="/login" method="post" onsubmit="handleLogin(event)">
+        <div class="form-frame">
+            <div class="write_form">
+                <div>
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div>
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div>
+                    <button type="submit">Войти</button>
+                </div>
+                <div>
+                    <p>Уже есть аккаунт? <a href="register.html">Регистрация</a></p>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Элемент для отображения сообщения -->
+    <div id="message"></div>
+
+</div>
+
+</body>
+</html>

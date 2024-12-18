@@ -1,0 +1,88 @@
+/* Основные стили для body */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0; /* Цвет фона страницы */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Центрирование по вертикали */
+    margin: 0;
+}
+
+/* Учитывать отступы и границы в ширине */
+* {
+    box-sizing: border-box;
+}
+
+/* Стили для контейнера с формой */
+.form-frame {
+    width: 572px; /* Фиксированная ширина */
+    height: 900px; /* Высота автоматически подстраивается под содержимое */
+    min-width: 80px; /* Минимальная ширина */
+    border-radius: 20px;
+    background: #ECE6F0; /* Цвет фона */
+    opacity: 1; /* Установите прозрачность на 1 для видимости */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* Позиционирование относительно родителя */
+    padding: 20px; /* Отступы внутри контейнера */
+}
+
+/* Стили для формы */
+.write_form {
+    width: 100%; /* Ширина 100% от родителя */
+    height: auto; /* Высота автоматически подстраивается под содержимое */
+    opacity: 1; /* Установите прозрачность на 1 для видимости */
+    display: flex;
+    flex-direction: column; /* Вертикальное расположение элементов */
+    gap: 20px; /* Увеличенный промежуток между элементами формы */
+}
+
+/* Стили для каждого элемента формы */
+label {
+    font-weight: bold; /* Жирный текст для меток */
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+button,
+textarea,
+select {
+    background-color: #D1D1D6; /* Цвет кнопки и полей ввода */
+    width: 100%; /* Ширина 100% от родителя */
+    padding: 15px; /* Внутренние отступы (уменьшены для лучшего вида) */
+    border: 1px solid #ccc; /* Цвет рамки */
+    border-radius: 16px; /* Скругление углов */
+}
+
+/* Стили для кнопок */
+button {
+    background-color: #65558F; /* Цвет кнопки */
+    color: white; /* Цвет текста кнопки */
+    border: none; /* Убрать рамку */
+    border-radius: 100px; /* Скругление углов кнопки */
+    cursor: pointer; /* Указатель при наведении */
+    padding: 15px; /* Внутренние отступы для кнопки */
+}
+
+button:hover {
+    background-color: #45a049; /* Цвет кнопки при наведении */
+}
+
+#message {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    display: none; /* Скрываем сообщение по умолчанию */
+}
+.success {
+    background-color: #d4edda; /* Светло-зеленый фон для успеха */
+    color: #155724; /* Темно-зеленый текст для успеха */
+}
+.error {
+    background-color: #f8d7da; /* Светло-красный фон для ошибок */
+    color: #721c24; /* Темно-красный текст для ошибок */
+}

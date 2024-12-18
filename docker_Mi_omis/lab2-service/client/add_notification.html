@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Запрос на бронирование стола</title>
+    <link rel="stylesheet" href="add_notification.css">
+    <script>
+            async function handleSubmit(event) {
+        console.log("Форма отправляется...");
+        event.preventDefault();
+
+        // Получаем значения полей формы
+        const requestText = document.getElementById('requestText').value;
+        const importanceDegree = document.getElementById('importanceDegree').value;
+        const notificationDate = document.getElementById('notificationDate').value;
+        const tableId = document.getElementById('tableId').value;
+
+        console.log({ requestText, importanceDegree, notificationDate, tableId }); // Отладка
+        const userData = JSON.parse(localStorage.getItem('userData'))
+        // Предположим, что userData содержит user_id
+        const userId = userData.id; // Замените это на фактический способ получения user_id
+
+        const bookingData = {
+            text: requestText,
+            degree_of_importance: importanceDegree,
+            notification_date: notificationDate,
+            user_id: userId,
+            table_id: parseInt(tableId)
+        };
+
+        try {
+            const response = await fetch('http://localhost:8000/api/notification/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(bookingData),
+            });
+
+            const messageDiv = document.getElementById('message');
+            messageDiv.style.display = 'block';
+
+            if (response.ok) {
+                const responseData = await response.json();
+                messageDiv.innerText = 'Ваш запрос на бронирование успешно отправлен!';
+                messageDiv.className = 'success';
+                window.location.href = 'user_account.html';
+            } else {
+                const errorData = await response.json();
+                messageDiv.innerText = 'Ошибка: ' + (errorData.detail?.message || 'Неизвестная ошибка');
+                messageDiv.className = 'error';
+            }
+        } catch (error) {
+            console.error('Ошибка при отправке данных:', error);
+            const messageDiv = document.getElementById('message');
+            messageDiv.style.display = 'block';
+            messageDiv.innerText = 'Произошла ошибка при отправке данных. Пожалуйста, попробуйте позже.';
+            messageDiv.className = 'error';
+        }
+    }
+
+
+    </script>
+</head>
+
+<body>
+
+<div class="form-frame">
+    <form action="/add" method="post" onsubmit="handleSubmit(event)">
+        <div class="write_form">
+            <div>
+                <label for="requestText">Текст запроса</label>
+                <textarea id="requestText" name="requestText" required></textarea>
+            </div>
+            <div>
+                <label for="importanceDegree">Степень важности</label>
+                <select id="importanceDegree" name="importanceDegree" required>
+                    <option value="низкая">Низкая</option>
+                    <option value="средняя">Средняя</option>
+                    <option value="высокая">Высокая</option>
+                </select>
+            </div>
+            <div>
+                <label for="notificationDate">Дата бронирования</label>
+                <input type="date" id="notificationDate" name="notificationDate" required>
+            </div>
+            <div>
+                <label for="tableId">Номер стола</label>
+                <input type="number" id="tableId" name="tableId" required min="1">
+            </div>
+            <div>
+                <button type="submit">Отправить запрос</button>
+            </div>
+        </div>
+
+        <!-- Элемент для отображения сообщения -->
+        <div id="message"></div>
+
+    </form>
+</div>
+
+</body>
+</html>

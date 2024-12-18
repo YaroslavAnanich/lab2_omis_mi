@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кабинет пользователя</title>
+    <link rel="stylesheet" href="account.css">
+    <script>
+        // Функция для получения данных пользователя из localStorage и отображения их на странице
+        function displayUserData() {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+
+            if (userData) {
+                document.getElementById('user-name').innerText = userData.name || 'Неизвестно';
+                document.getElementById('user-email').innerText = userData.email || 'Неизвестно';
+                document.getElementById('user-phone').innerText = userData.phone || 'Неизвестно';
+            } else {
+                alert('Пожалуйста, войдите в систему.');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Функция для получения уведомлений с сервера
+        function fetchNotifications() {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+
+            if (!userData || !userData.id) {
+                alert('Не удалось получить идентификатор пользователя.');
+                return;
+            }
+
+            const userId = Number(userData.id);
+
+            const url = `http://localhost:8000/api/notification/user/get?user_id=${userId}`;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Сеть не отвечает');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Полученные данные:', data);
+                    displayNotifications(data);
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    alert('Не удалось загрузить уведомления.');
+                });
+        }
+
+        function displayNotifications(notifications) {
+            const notificationsContainer = document.getElementById('notifications-container');
+            notificationsContainer.innerHTML = '';
+
+            if (!Array.isArray(notifications) || notifications.length === 0) {
+                notificationsContainer.innerHTML = '<p>Нет новых уведомлений.</p>';
+                return;
+            }
+
+            notifications.forEach(notification => {
+                const notificationElement = document.createElement('div');
+                notificationElement.className = 'notification';
+
+                // Создаем содержимое уведомления
+                notificationElement.innerHTML = `
+                    <p><strong>Уведомление:</strong> ${notification.text || 'Нет текста'}</p>
+                    <p><strong>Степень важности:</strong> ${notification.degree_of_importance || 'Не указано'}</p>
+                    <p><strong>Дата уведомления:</strong> ${notification.notification_date || 'Не указана'}</p>
+                    <p><strong>Состояние:</strong> ${notification.state || 'Не указано'}</p>
+                    <button onclick="closeNotification(this)">Закрыть</button>
+                    <hr>
+                `;
+
+                notificationsContainer.appendChild(notificationElement);
+            });
+        }
+
+        // Функция для закрытия уведомления
+        function closeNotification(button) {
+            const notificationElement = button.parentElement;
+            notificationElement.style.display = 'none'; // Скрываем уведомление
+        }
+
+        window.onload = displayUserData;
+    </script>
+</head>
+
+<body>
+    <div class="user-dashboard">
+        <div class="user-actions">
+            <h2>Действия:</h2>
+            <button onclick="fetchNotifications()">Уведомления</button>
+            <button onclick="window.location.href='add_notification.html'">Забронировать стол</button>
+        </div>
+
+        <div class="user-info">
+            <h1></h1>
+            <h2></h2>
+
+            <div class="user-data-block">
+                <p><strong>Номер телефона:</strong></p>
+                <p id="user-phone"></p>
+            </div>
+
+            <div class="data-divider"></div>
+
+            <div class="user-data-block">
+                <p><strong>Email:</strong></p>
+                <p id="user-email"></p>
+            </div>
+
+            <div class="data-divider"></div>
+
+            <div class="user-data-block">
+                <p><strong>Имя:</strong></p>
+                <p id="user-name"></p>
+            </div>
+
+            <div class="data-divider"></div>
+        </div>
+    </div>
+
+    <!-- Контейнер для отображения уведомлений -->
+    <div id="notifications-container" class="notifications-container"></div>
+</body>
+
+</html>
